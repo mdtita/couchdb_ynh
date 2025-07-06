@@ -91,6 +91,14 @@ ynh_script_progression --message="Integrating service in YunoHost..." --weight=1
 yunohost service add $app --description="Open-source document-oriented NoSQL database" --log="/var/log/$app/$app.log" --needs_exposed_ports "$port"
 
 #=================================================
+# START COUCHDB SERVICE
+#=================================================
+ynh_script_progression --message="Starting CouchDB service..." --weight=1
+
+# Start CouchDB service
+ynh_systemd_action --service_name=couchdb --action="start" --log_path="/var/log/couchdb/couchdb.log"
+
+#=================================================
 # GENERIC FINALIZATION
 #=================================================
 # RELOAD NGINX

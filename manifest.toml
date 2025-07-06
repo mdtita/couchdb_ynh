@@ -56,6 +56,9 @@ ram.runtime = "60M"
 
     [resources.permissions]
     main.url = "/"
+    main.auth_header = false
+    main.show_tile = false
+    main.protected = false
 
     [resources.ports]
     main.default = 5984

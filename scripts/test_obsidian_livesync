@@ -1,0 +1,85 @@
+#!/bin/bash
+
+# Test script for CouchDB with Obsidian LiveSync compatibility
+# This script tests the essential functionality needed for Obsidian LiveSync
+
+echo "🔍 Testing CouchDB installation for Obsidian LiveSync compatibility..."
+
+# Get the app details
+app="couchdb"
+domain=$(ynh_app_setting_get --app=$app --key=domain)
+path=$(ynh_app_setting_get --app=$app --key=path)
+port=$(ynh_app_setting_get --app=$app --key=port)
+
+# Handle root path case
+if [[ "$path" == "/" ]]; then
+    url_path=""
+    display_path="/ (root)"
+else
+    url_path="$path"
+    display_path="$path"
+fi
+
+echo "📋 Configuration:"
+echo "   Domain: $domain"
+echo "   Path: $display_path"
+echo "   Port: $port"
+echo ""
+
+# Test 1: Check if CouchDB service is running
+echo "🧪 Test 1: CouchDB service status"
+if systemctl is-active --quiet couchdb; then
+    echo "   ✅ CouchDB service is running"
+else
+    echo "   ❌ CouchDB service is not running"
+    echo "   Try: sudo systemctl start couchdb"
+fi
+
+# Test 2: Test local connection
+echo ""
+echo "🧪 Test 2: Local CouchDB connection"
+if curl -s "http://127.0.0.1:$port/" > /dev/null; then
+    echo "   ✅ CouchDB is responding on localhost"
+else
+    echo "   ❌ CouchDB is not responding on localhost"
+fi
+
+# Test 3: Test through nginx proxy
+echo ""
+echo "🧪 Test 3: HTTPS proxy connection"
+if curl -k -s "https://$domain$url_path/" | grep -q "couchdb"; then
+    echo "   ✅ CouchDB is accessible through nginx proxy"
+else
+    echo "   ❌ CouchDB is not accessible through nginx proxy"
+    echo "   Check nginx configuration and logs"
+fi
+
+# Test 4: Test CORS headers
+echo ""
+echo "🧪 Test 4: CORS headers"
+cors_origin=$(curl -k -s -H "Origin: https://example.com" -I "https://$domain$url_path/" | grep -i "access-control-allow-origin")
+if [[ -n "$cors_origin" ]]; then
+    echo "   ✅ CORS headers are present"
+    echo "   $cors_origin"
+else
+    echo "   ❌ CORS headers are missing"
+fi
+
+# Test 5: Test authentication endpoint
+echo ""
+echo "🧪 Test 5: Authentication endpoint"
+if curl -k -s "https://$domain$url_path/_session" | grep -q "userCtx"; then
+    echo "   ✅ Authentication endpoint is accessible"
+else
+    echo "   ❌ Authentication endpoint is not working"
+fi
+
+echo ""
+echo "🏁 Test completed!"
+echo ""
+echo "📝 For Obsidian LiveSync configuration:"
+echo "   URI: https://$domain$url_path/"
+echo "   Database: Create a new database in Fauxton"
+echo "   Credentials: Use your CouchDB admin credentials"
+echo ""
+echo "📚 Full setup guide: /usr/share/doc/couchdb_ynh/OBSIDIAN_LIVESYNC.md"

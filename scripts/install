@@ -62,6 +62,24 @@ chmod -R o-rwx "$install_dir"
 chown -R "$app:$app" "$install_dir"
 
 #=================================================
+# START COUCHDB SERVICE
+#=================================================
+ynh_script_progression --message="Starting CouchDB service..." --weight=1
+
+# Start and enable CouchDB service
+ynh_systemd_action --service_name=couchdb --action="enable"
+ynh_systemd_action --service_name=couchdb --action="start" --log_path="/var/log/couchdb/couchdb.log"
+
+#=================================================
+# COPY TEST SCRIPT
+#=================================================
+ynh_script_progression --message="Installing test script..." --weight=1
+
+# Copy the test script
+cp "../scripts/test_obsidian_livesync" "/usr/local/bin/test_couchdb_obsidian"
+chmod +x "/usr/local/bin/test_couchdb_obsidian"
+
+#=================================================
 # GENERIC FINALIZATION
 #=================================================
 # SETUP LOGROTATE
@@ -91,3 +109,24 @@ ynh_add_fail2ban_config --logpath="/var/log/couchdb/couchdb.log" --failregex="[w
 #=================================================
 
 ynh_script_progression --message="Installation of $app completed" --last
+
+# Handle root path display
+if [[ "$path" == "/" ]]; then
+    admin_url="https://$domain/_utils/"
+    api_url="https://$domain/"
+else
+    admin_url="https://$domain$path/_utils/"
+    api_url="https://$domain$path/"
+fi
+
+ynh_print_info --message="🎉 CouchDB has been successfully installed!"
+ynh_print_info --message=""
+ynh_print_info --message="📍 Access your CouchDB instance:"
+ynh_print_info --message="   • Admin interface: $admin_url"
+ynh_print_info --message="   • API endpoint: $api_url"
+ynh_print_info --message=""
+ynh_print_info --message="🔧 For Obsidian LiveSync setup:"
+ynh_print_info --message="   • Run: test_couchdb_obsidian"
+ynh_print_info --message="   • See: /usr/share/doc/couchdb_ynh/OBSIDIAN_LIVESYNC.md"
+ynh_print_info --message=""
+ynh_print_info --message="🔑 Use your admin credentials to access CouchDB"

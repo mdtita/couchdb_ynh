@@ -59,6 +59,14 @@ chmod -R o-rwx "$install_dir"
 chown -R "$app:$app" "$install_dir"
 
 #=================================================
+# RESTART COUCHDB SERVICE
+#=================================================
+ynh_script_progression --message="Restarting CouchDB service..." --weight=1
+
+# Restart CouchDB to apply configuration changes
+ynh_systemd_action --service_name=couchdb --action="restart" --log_path="/var/log/couchdb/couchdb.log"
+
+#=================================================
 # GENERIC FINALIZATION
 #=================================================
 # SETUP LOGROTATE
