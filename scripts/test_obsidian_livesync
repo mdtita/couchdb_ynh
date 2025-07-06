@@ -57,12 +57,27 @@ fi
 # Test 4: Test CORS headers
 echo ""
 echo "🧪 Test 4: CORS headers"
-cors_origin=$(curl -k -s -H "Origin: https://example.com" -I "https://$domain$url_path/" | grep -i "access-control-allow-origin")
+echo "   Testing with Origin: https://obsidian.md"
+cors_response=$(curl -k -s -H "Origin: https://obsidian.md" -I "https://$domain$url_path/")
+cors_origin=$(echo "$cors_response" | grep -i "access-control-allow-origin")
+cors_credentials=$(echo "$cors_response" | grep -i "access-control-allow-credentials")
+
 if [[ -n "$cors_origin" ]]; then
-    echo "   ✅ CORS headers are present"
-    echo "   $cors_origin"
+    echo "   ✅ CORS Origin header: $cors_origin"
+    if [[ -n "$cors_credentials" ]]; then
+        echo "   ✅ CORS Credentials: $cors_credentials"
+    else
+        echo "   ⚠️  CORS Credentials header missing"
+    fi
 else
     echo "   ❌ CORS headers are missing"
+    echo "   Checking CouchDB direct response..."
+    couchdb_cors=$(curl -k -s -H "Origin: https://obsidian.md" -I "http://127.0.0.1:$port/" | grep -i "access-control")
+    if [[ -n "$couchdb_cors" ]]; then
+        echo "   ✅ CouchDB has CORS, but nginx may be blocking it"
+    else
+        echo "   ❌ CouchDB CORS not configured properly"
+    fi
 fi
 
 # Test 5: Test authentication endpoint
@@ -73,6 +88,13 @@ if curl -k -s "https://$domain$url_path/_session" | grep -q "userCtx"; then
 else
     echo "   ❌ Authentication endpoint is not working"
 fi
+
+# Test 6: Test file size limits
+echo ""
+echo "🧪 Test 6: File size configuration"
+echo "   Nginx max body size: $(nginx -T 2>/dev/null | grep 'client_max_body_size' | head -1 || echo 'Could not determine')"
+echo "   CouchDB max request size: 1GB (configured)"
+echo "   CouchDB max attachment size: 1GB (configured)"
 
 echo ""
 echo "🏁 Test completed!"

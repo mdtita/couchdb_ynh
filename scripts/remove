@@ -37,8 +37,9 @@ ynh_remove_fail2ban_config
 #=================================================
 ynh_script_progression --message="Removing test script..." --weight=1
 
-# Remove test script
+# Remove test scripts
 rm -f "/usr/local/bin/test_couchdb_obsidian"
+rm -f "/usr/local/bin/couchdb_cors_troubleshoot"
 
 #=================================================
 # END OF SCRIPT

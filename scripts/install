@@ -75,9 +75,11 @@ ynh_systemd_action --service_name=couchdb --action="start" --log_path="/var/log/
 #=================================================
 ynh_script_progression --message="Installing test script..." --weight=1
 
-# Copy the test script
+# Copy the test scripts
 cp "../scripts/test_obsidian_livesync" "/usr/local/bin/test_couchdb_obsidian"
+cp "../scripts/cors_troubleshoot" "/usr/local/bin/couchdb_cors_troubleshoot"
 chmod +x "/usr/local/bin/test_couchdb_obsidian"
+chmod +x "/usr/local/bin/couchdb_cors_troubleshoot"
 
 #=================================================
 # GENERIC FINALIZATION
@@ -127,6 +129,7 @@ ynh_print_info --message="   • API endpoint: $api_url"
 ynh_print_info --message=""
 ynh_print_info --message="🔧 For Obsidian LiveSync setup:"
 ynh_print_info --message="   • Run: test_couchdb_obsidian"
+ynh_print_info --message="   • CORS issues: couchdb_cors_troubleshoot"
 ynh_print_info --message="   • See: /usr/share/doc/couchdb_ynh/OBSIDIAN_LIVESYNC.md"
 ynh_print_info --message=""
 ynh_print_info --message="🔑 Use your admin credentials to access CouchDB"
