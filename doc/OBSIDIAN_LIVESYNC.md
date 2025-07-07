@@ -47,7 +47,7 @@ The plugin should now be able to connect to your CouchDB instance. The configura
 
 - ✅ CORS headers for web access
 - ✅ Proper authentication handling
-- ✅ Large file upload support (256MB)
+- ✅ Large file upload support (1GB)
 - ✅ WebSocket support for real-time sync
 
 ## Troubleshooting
