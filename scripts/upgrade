@@ -66,6 +66,14 @@ ynh_script_progression --message="Restarting CouchDB service..." --weight=1
 # Restart CouchDB to apply configuration changes
 ynh_systemd_action --service_name=couchdb --action="restart" --log_path="/var/log/couchdb/couchdb.log"
 
+# Wait for CouchDB to be ready
+ynh_script_progression --message="Waiting for CouchDB to be ready..." --weight=1
+sleep 5
+
+# Ensure admin user exists with current password
+ynh_script_progression --message="Updating admin user..." --weight=1
+curl -X PUT "http://127.0.0.1:$port/_node/_local/_config/admins/admin" -d "\"$password\"" -H "Content-Type: application/json"
+
 #=================================================
 # GENERIC FINALIZATION
 #=================================================

@@ -98,6 +98,14 @@ ynh_script_progression --message="Starting CouchDB service..." --weight=1
 # Start CouchDB service
 ynh_systemd_action --service_name=couchdb --action="start" --log_path="/var/log/couchdb/couchdb.log"
 
+# Wait for CouchDB to be ready
+ynh_script_progression --message="Waiting for CouchDB to be ready..." --weight=1
+sleep 5
+
+# Create admin user via CouchDB API
+ynh_script_progression --message="Creating admin user..." --weight=1
+curl -X PUT "http://127.0.0.1:$port/_node/_local/_config/admins/admin" -d "\"$password\"" -H "Content-Type: application/json"
+
 #=================================================
 # GENERIC FINALIZATION
 #=================================================
