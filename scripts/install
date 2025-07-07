@@ -42,6 +42,7 @@ couchdb couchdb/adminpass password $password
 couchdb couchdb/adminpass seen true
 couchdb couchdb/adminpass_again password $password
 couchdb couchdb/adminpass_again seen true" | debconf-set-selections
+
 DEBIAN_FRONTEND=noninteractive # apt-get install -y --force-yes couchdb
 
 ynh_install_extra_app_dependencies \
@@ -74,9 +75,9 @@ ynh_systemd_action --service_name=couchdb --action="start" --log_path="/var/log/
 ynh_script_progression --message="Waiting for CouchDB to be ready..." --weight=1
 sleep 5
 
-# Create admin user via CouchDB API
+# Create admin user
 ynh_script_progression --message="Creating admin user..." --weight=1
-curl -X PUT "http://127.0.0.1:$port/_node/_local/_config/admins/admin" -d "\"$password\"" -H "Content-Type: application/json"
+curl -X PUT "http://127.0.0.1:$port/_node/couchdb@127.0.0.1/_config/admins/admin" -d "\"$password\""
 
 #=================================================
 # COPY TEST SCRIPT
