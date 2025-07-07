@@ -71,6 +71,10 @@ ynh_script_progression --message="Starting CouchDB service..." --weight=1
 ynh_systemd_action --service_name=couchdb --action="enable"
 ynh_systemd_action --service_name=couchdb --action="start" --log_path="/var/log/couchdb/couchdb.log"
 
+# Wait for CouchDB to be ready and create admin user
+sleep 3
+curl -X PUT "http://127.0.0.1:$port/_node/_local/_config/admins/admin" -d "\"$password\""
+
 #=================================================
 # COPY TEST SCRIPT
 #=================================================
