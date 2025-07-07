@@ -43,8 +43,6 @@ couchdb couchdb/adminpass seen true
 couchdb couchdb/adminpass_again password $password
 couchdb couchdb/adminpass_again seen true" | debconf-set-selections
 
-DEBIAN_FRONTEND=noninteractive # apt-get install -y --force-yes couchdb
-
 ynh_install_extra_app_dependencies \
     --repo="deb https://apache.jfrog.io/artifactory/couchdb-deb/ $(lsb_release -c -s) main" \
     --key="https://couchdb.apache.org/repo/keys.asc" \
@@ -71,8 +69,6 @@ ynh_script_progression --message="Starting CouchDB service..." --weight=1
 ynh_systemd_action --service_name=couchdb --action="enable"
 ynh_systemd_action --service_name=couchdb --action="start" --log_path="/var/log/couchdb/couchdb.log"
 
-#=================================================
-# COPY TEST SCRIPT
 #=================================================
 # GENERIC FINALIZATION
 #=================================================
@@ -120,7 +116,6 @@ ynh_print_info --message="   • Admin interface: $admin_url"
 ynh_print_info --message="   • API endpoint: $api_url"
 ynh_print_info --message=""
 ynh_print_info --message="🔧 For Obsidian LiveSync setup:"
-ynh_print_info --message="   • See: /usr/share/doc/couchdb_ynh/OBSIDIAN_LIVESYNC.md"
-ynh_print_info --message="   • Or check the app documentation"
+ynh_print_info --message="   • Check the app documentation in YunoHost admin panel"
 ynh_print_info --message=""
 ynh_print_info --message="🔑 Use your admin credentials to access CouchDB"
